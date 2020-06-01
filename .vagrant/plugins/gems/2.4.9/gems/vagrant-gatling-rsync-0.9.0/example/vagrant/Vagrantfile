@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provider "docker" do |d, override|
+    d.image = "smerrill/vagrant-centos"
+    d.has_ssh = true
+
+    # This is needed if you have non-Docker provisioners in the Vagrantfile.
+    override.vm.box = nil
+
+    # Ensure Vagrant knows the SSH port. See
+    # https://github.com/mitchellh/vagrant/issues/3772.
+    override.ssh.port = 22
+  end
+
+  config.vm.provider "lxc" do |d, override|
+    override.vm.box = "smerrill/centos-7"
+  end
+
+  # When using gatling rsync in your projects, you should wrap these configs in
+  # an 'if Vagrant.has_plugin?("vagrant-gatling-rsync")' test.
+
+  # Configure the window for gatling to coalesce writes.
+  config.gatling.latency = 0.4
+  config.gatling.time_format = "%H:%M:%S"
+
+  # Gatling rsync will run `vagrant gatling-rsync-auto` after the machines in
+  # your Vagrant environment start unles you set this to false.
+  config.gatling.rsync_on_startup = true
+
+  # Add a multi-box setup.
+  config.vm.define "rsync", primary: true do |m|
+    m.vm.synced_folder "../files", "/opt/vagrant/rsynced_folder", type: "rsync",
+      rsync__exclude: [".git/", ".idea/"]
+  end
+
+  config.vm.define "rsync2", primary: true do |m|
+    m.vm.synced_folder "../files", "/opt/vagrant/rsynced_folder", type: "rsync",
+      rsync__exclude: [".git/", ".idea/"]
+  end
+
+  config.vm.define "norsync" do |m|
+  end
+end
