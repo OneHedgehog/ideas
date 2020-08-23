@@ -15,12 +15,12 @@ services:
     restart: always
     ports:
       # care, custom port for prevent conflict
-      - "5432:5432"
-    volumes:
-      - .docker/postgres/dbfiles:/var/lib/postgresql/pgdata
+      - "5433:5432"
+#    volumes:
+#      - .docker/postgres/dbfiles:/var/lib/postgresql/pgdata
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB:  ${POSTGRES_PASSWORD}
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_INITDB_ARGS: "--pgdata=/var/lib/postgresql/data/pgdata"
+      # PGDATA: /var/lib/postgresql/data/pgdata
+      # POSTGRES_INITDB_ARGS: "--pgdata=/var/lib/postgresql/data/pgdata"

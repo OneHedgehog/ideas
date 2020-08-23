@@ -13,5 +13,4 @@ export class IdeaEntity {
 
     @Column('text')
     description: string;
-
 }
