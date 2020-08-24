@@ -1,7 +1,8 @@
-import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Post, Put, UsePipes} from "@nestjs/common";
 import {IdeaService} from "./idea.service";
 import {IdeaDto} from "./idea.dto";
 import { Logger } from '@nestjs/common';
+import {ValidationPipe} from "../shared/validation.pipe";
 
 @Controller('idea')
 export class IdeaController {
@@ -17,29 +18,28 @@ export class IdeaController {
 
     @Get(':id')
     public readIdea(@Param() id: string) {
-        console.log('READ IDEA');
-        return this.ideaService.read(id);
+        const idea = this.ideaService.read(id);
+        if(!idea) {
+
+        }
+
+        return idea;
     }
 
     @Put(':id')
+    @UsePipes(new ValidationPipe())
     public updateIdea(@Param() id: string, @Body() data: Partial<IdeaDto>) {
         return this.ideaService.update(id, data);
     }
 
     @Post()
+    @UsePipes(new ValidationPipe())
     public createIdea(@Body() data: IdeaDto) {
-
-        console.log(data);
-        try {
-            return this.ideaService.create(data);
-        } catch (e) {
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-        }
-
+        return this.ideaService.create(data);
     }
 
-    @Delete()
+    @Delete(':id')
     public destroyIdea(@Param() id) {
-        this.ideaService.destroy(id);
+        return this.ideaService.destroy(id);
     }
 }

@@ -4,8 +4,10 @@ import {AppService} from './app.service';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import { IdeaModule } from './idea/idea.module';
-import {APP_FILTER} from "@nestjs/core";
+import {APP_FILTER, APP_INTERCEPTOR} from "@nestjs/core";
 import {HttpErrorFilter} from "./shared/http-error.filter";
+import {LoggingInterceptor} from "./shared/logging.interceptor";
+import {UserModule} from "./user/user.module";
 
 @Module({
     imports: [
@@ -19,9 +21,12 @@ import {HttpErrorFilter} from "./shared/http-error.filter";
             database:  process.env.POSTGRES_DB,
             entities: ['dist/**/*.entity.js'],
             logging: true,
-            synchronize: true
+            synchronize: true,
+            retryAttempts: 2,
+            retryDelay: 1000
         }),
-        IdeaModule
+        IdeaModule,
+        UserModule
     ],
     controllers: [AppController],
     providers: [
@@ -29,6 +34,10 @@ import {HttpErrorFilter} from "./shared/http-error.filter";
         {
             provide: APP_FILTER,
             useClass: HttpErrorFilter
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: LoggingInterceptor
         }
     ],
 })
@@ -37,6 +46,5 @@ export class AppModule {
         private configService: ConfigService
     ) {
         console.log(process.env);
-        console.log('[dsfsdf]', this.configService.get('POSTGRES_HOST'));
     }
 }

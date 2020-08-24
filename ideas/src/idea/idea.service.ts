@@ -13,7 +13,6 @@ export class IdeaService {
     }
 
     public async showAll() {
-        console.log('[showAll from service]');
         return await this.ideaRepository.find()
     }
 
@@ -25,21 +24,19 @@ export class IdeaService {
     }
 
     public async read(id: string) {
-        return await this.ideaRepository.findOne({
-            where: {id}
-        })
+        const idea = await this.ideaRepository.findOneOrFail(id);
+
+        return idea;
     }
 
 
     public async update(id: string, data: Partial<IdeaDto>) {
-        await this.ideaRepository.update({id}, data);
-        return await this.ideaRepository.findOne({
-            where: {id}
-        })
+        await this.ideaRepository.update(id, data);
+        return await this.ideaRepository.findOneOrFail({ where: { id } })
     }
 
     public async destroy(id: string) {
-        await this.ideaRepository.delete({id});
+        await this.ideaRepository.delete(id);
         return {deleted: true};
     }
 }
