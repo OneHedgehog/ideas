@@ -4,7 +4,7 @@ import {IdeaDto} from "./idea.dto";
 import { Logger } from '@nestjs/common';
 import {ValidationPipe} from "../shared/validation.pipe";
 
-@Controller('idea')
+@Controller('api/idea')
 export class IdeaController {
     constructor(
         private ideaService: IdeaService,
