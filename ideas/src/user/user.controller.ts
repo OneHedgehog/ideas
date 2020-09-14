@@ -29,6 +29,6 @@ export class UserController {
     @Post('register')
     // @UsePipes(new ValidationPipe())
     public register(@Body() data: UserDto) {
-        this.userService.register(data);
+        return this.userService.register(data);
     }
 }

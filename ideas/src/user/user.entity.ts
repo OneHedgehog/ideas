@@ -20,6 +20,16 @@ export class UserEntity {
     @Column('text')
     password: string;
 
+    public get token() {
+        const {id, username} = this;
+        return jwt.sign(
+            {id, username},
+            process.env.SECRET,
+            { expiresIn: '7d'}
+        )
+
+    }
+
     @BeforeInsert()
     async hashPassword() {
         this.password = await bcrypt.hash(this.password, 10);
@@ -29,17 +39,8 @@ export class UserEntity {
         return bcrypt.compare(attempt, this.password);
     }
 
-    private get token() {
-        const {id, username} = this;
-        return jwt.sign(
-            id,
-            username,
-            process.env.SECRET,
-            { expiresIn: '7d'}
-        )
-    }
-
     toResponseObject(showToken: boolean = true) {
+        // return this.token;
         const {id, created, username, token} = this;
         const responseObject  =  {id, created, username};
         if (showToken) {
