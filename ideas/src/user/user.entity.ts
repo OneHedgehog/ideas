@@ -1,7 +1,16 @@
 import {Injectable} from "@nestjs/common";
-import {BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BeforeInsert,
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import * as bcrypt from 'bcryptjs'
 import * as jwt from 'jsonwebtoken'
+import {IdeaEntity} from "../idea/idea.entity";
 
 @Entity('user')
 export class UserEntity {
@@ -11,6 +20,9 @@ export class UserEntity {
     @CreateDateColumn()
     created: Date;
 
+    @UpdateDateColumn()
+    updated: Date;
+
     @Column({
         type: 'text',
         unique: true
@@ -19,6 +31,9 @@ export class UserEntity {
 
     @Column('text')
     password: string;
+
+    @OneToMany(type => IdeaEntity, idea => idea.author)
+    ideas: IdeaEntity[]
 
     public get token() {
         const {id, username} = this;
@@ -40,7 +55,6 @@ export class UserEntity {
     }
 
     toResponseObject(showToken: boolean = true) {
-        // return this.token;
         const {id, created, username, token} = this;
         const responseObject  =  {id, created, username};
         if (showToken) {

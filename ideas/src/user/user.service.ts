@@ -21,7 +21,7 @@ export class UserService {
 
     public async login(data: UserDto) {
         const { username, password} = data;
-        const user = await this.userRepository.findOne({where: { username}});
+        const user = await this.userRepository.findOne({where: {username}});
 
         if(!user || !user.comparePassword(password)) {
             throw new HttpException(
